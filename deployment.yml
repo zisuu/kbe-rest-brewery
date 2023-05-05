@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: myapp
+  name: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - image: jhyyhpp/kbe-rest-brewery
+        name: kbe-rest-brewery
+        resources: {}
+        env:
+        - name: LOGGING_LEVEL_CH_FINECLOUD_SFGRESTBREWERY
+          value: INFO
+        - name: MANAGEMENT_ENDPOINTS_HEALTH_PROBES_ENABLED
+          value: "true"
+        - name: MANAGEMENT_HEALTH_READINESSSTATE_ENABLED
+          value: "true"
+        - name: MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED
+          value: "true"
+        - name: SERVER_SHUTDOWN
+          value: "graceful"
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 10"]
+        livenessProbe:
+            httpGet:
+                path: /actuator/health/liveness
+                port: 8080
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+status: {}
